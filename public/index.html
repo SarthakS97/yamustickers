@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yamu's Stickers</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .input-container {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        #promptInput {
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+        }
+        #createButton {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 0 4px 4px 0;
+        }
+        #createButton:hover {
+            background-color: #2980b9;
+        }
+        #imageContainer {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #imageContainer img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .loading {
+            text-align: center;
+            font-style: italic;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>Yamu's Creative Arts</h1>
+    <div class="input-container">
+        <input type="text" id="promptInput" placeholder="Enter your creative prompt. For example: A cute cartoon horse holding a sign that says hi">
+        <button id="createButton">Create</button>
+    </div>
+    <div id="imageContainer"></div>
+
+    <script>
+        document.getElementById('createButton').addEventListener('click', async () => {
+            const promptInput = document.getElementById('promptInput');
+            const imageContainer = document.getElementById('imageContainer');
+            const prompt = promptInput.value;
+
+            if (!prompt) {
+                alert('Please enter a prompt');
+                return;
+            }
+
+            imageContainer.innerHTML = '<p class="loading">Ond nimsha iri medum image barutte...</p>';
+
+            try {
+                const response = await fetch('/generate-image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt }),
+                });
+            
+                if (response.ok) {
+                    const imageUrl = await response.text();
+                    imageContainer.innerHTML = `<img src="${imageUrl}" alt="Generated Image">`;
+                } else {
+                    throw new Error('Error generating image');
+                }
+            } catch (error) {
+                imageContainer.innerHTML = '<p>Error generating image. Please try again.</p>';
+            }
+        });
+    </script>
+</body>
+</html>
